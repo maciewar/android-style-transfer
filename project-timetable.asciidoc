@@ -1,0 +1,6 @@
+* [~ IV 2018] Prepare prototypes:
+** Custom style model prototype (Python + TensorFlow)
+** Common module for TensorFlow models usage (Java + TensorFlow)
+** Graphic stub of android application (Android + Java)
+* [~ V 2018] Working systems based on prototypes and integration
+* [~ VI 2018] REST service and integration with android application 
