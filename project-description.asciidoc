@@ -1,0 +1,45 @@
+= Opis projektu =
+
+Poniższy dokument stanowi poglądowy opis aplikacji.
+
+== Opis biznesowy ==
+
+Aplikacja ma na celu umożliwienie użytkownikowi telefonu z systemem Android zmiany stylu istniejącego (bądź zrobionego w danym 
+momencie) zdjęcia, korzystając z jednego z kilku predefiniowanych styli.
+
+== Opis techniczny ==
+Celem projektu jest stworzenie aplikacji na urządzenie mobilne, która po zrobieniu lub wczytaniu zdjęcia użyje sieci neuronowej 
+żeby zmienić styl tego zdjęcia na jeden z wybranych. Zestaw styli zostanie zdefiniowany przez twórców aplikacji.
+
+Rozważane jest kilka podejść:
+
+* aplikacja całkowicie natywna - cały proces odbywa się na telefonie użytkownika: 
+** sieć zostanie wytrenowana na oddzielnym środowisku, a następnie przeniesiona na telefon
+** przetwarzanie zdjęcia wykonywane jest na telefonie
+
+* mikroserwis do przetwarzania zdjęć - część procesu odbywa się online:
+** sieć zostanie wytrenowana na oddzielnym środowisku, a następnie użyta przez mikroserwis RESTowy (Java lub Python)
+** aplikacja androidowa przesyła zdjęcie wraz z parametrami do mikroserwisu, gdzie odbywa się właściwe przetwarzanie
+
+* podejście mieszane:
+** dla słabszych telefonów - podejście drugie
+** dla mocniejszych telefonów - podejście pierwsze
+
+== Użyte technologie ==
+* TensorFlow (Python & Java)
+* Magenta
+* Android (API Level: 21) (zależne od wybranej architektury/dostępnego sprzętu)
+* Spring (Web, Auth(?); dla mikroserwisu w Jave'ie)
+* Flask (dla mikroserwisu w Python'ie)
+
+== Opis kluczowych technologii ==
+
+TODO: Tutaj albo przy punktach z sekcji powyżej
+
+== Mockupy interfejsu graficznego aplikacji ==
+
+Pliki graficzne przedstawiające kolejne ekrany aplikacji znajdują się w udostępnionym folderze footnoteref:[disclaimer,Część ekranów zastąpiona jest pustym ekranem - będą one sukcesywnie uzupełniane]:
+
+https://drive.google.com/open?id=1pcN7TimuHa_xHHYNfIzMhTMF2tE4uRN2
+
+Plik flow.png przedstawia przejścia pomiędzy kolejnymi ekranami.
