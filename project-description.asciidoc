@@ -34,7 +34,15 @@ Rozważane jest kilka podejść:
 
 == Opis kluczowych technologii ==
 
-TODO: Tutaj albo przy punktach z sekcji powyżej
+Magenta jest projektem skupiającym się na badaniu roli uczenia maszynowego (w szczególności uczenia głębokiego oraz uczenia ze wzmocnieniem) w procesie tworzenia muzyki i sztuki. Założycielami byli pracownicy zespołu Google Brain. Algorytmy implementowane są przy pomocy TensorFlow również tworzonego przez Google.
+
+TensorFlow to najpopularniejszy obecnie framework do obliczeń numerycznych w Pythonie. Pozwala wykorzystać moc oferowaną przez karty graficzne, co znacząco skraca czas trenowania modeli. TensorFlow zapewnia też szerokie wsparcie dla operacji wykorzystywanych do budowania złożonych sieci neuronowych. 
+
+Transfer stylu jest jednym z algorytmów implementowanych w ramach projektu Magenta. Opiera się on na artykule A Learned Representation For Artistic Style (https://arxiv.org/abs/1610.07629). Jest to ulepszona wersja oryginalnego pomysłu opisanego w artykule A Neural Algorithm of Artistic Style (https://arxiv.org/abs/1508.06576). 
+
+Pierwotny pomysł opiera się na wykorzystaniu hierarchicznej budowy wielowarstwowej konwolucyjnej sieci neuronowej. Wejście do takiej sieci zawiera wszystkie szczegóły znajdujące się na danym zdjęciu, ale im dalsza warstwa, tym mniej szczegółów zostaje zachowanych, a na ich miejsce pojawiają się wysokopoziomowe cechy. Jednym ze sposobów realizacji transferu stylu jest takie modyfikowanie zdjęcia wejściowego przy pomocy spadku wzdłóż gradientu, żeby było jak najbardziej podobne do oryginału (zachowanie szczegółów) i jednocześnie miało jak najbardziej podobną głęboką reprezentację do zdjęcia będącego dawcą stylu (zmiana ogólnego wyglądu).
+
+Proces ten jest jednak kosztowny obliczeniowo i pojedynczy transfer trwałby zbyt długo, dlatego powstały inne, efektywniejsze sposoby. Ogólny zarys pomysłu algorytmu zaimplementowanego w Magencie jest bardzo prosty. Można użyć oryginalnego transferu stylu, żeby przygotować pary zdjęć: [zwykłe zdjęcie, zdjęcie ze stylem] i użyć ich do nauczenia sieci neuronowej, która znajdzie parametry pozwalające w przybliżony sposób zamieniać jedno na drugie. Po wytrenowaniu takiej sieci można szybko transferować styl, bo obliczeniowo sprowadza się to do serii mnożeń macierzy i prostych przekształceń algebraicznych. 
 
 == Mockupy interfejsu graficznego aplikacji ==
 
