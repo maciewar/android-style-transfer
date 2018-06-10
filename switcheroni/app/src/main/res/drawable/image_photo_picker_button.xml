@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <stroke
+                android:width="2dp"
+                android:color="@color/colorButtonPrimaryLight" />
+            <solid android:color="@color/colorButtonPrimary" />
+            <size
+                android:width="90dp"
+                android:height="90dp" />
+        </shape>
+    </item>
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <stroke
+                android:width="4dp"
+                android:color="@color/colorButtonPrimaryDark" />
+            <size
+                android:width="98dp"
+                android:height="98dp" />
+        </shape>
+    </item>
+</layer-list>
