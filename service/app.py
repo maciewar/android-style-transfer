@@ -56,7 +56,8 @@ class Style(Resource):
 
             encoded_image = base64.urlsafe_b64encode(temp_file.read()).decode('UTF-8')
 
-        return {'image': encoded_image}
+        result = {'result': encoded_image}
+        return result
 
 
 def stylize_image(input_image, style_id):
@@ -76,7 +77,7 @@ def stylize_image(input_image, style_id):
         return stylized_images[0]
 
 
-API.add_resource(Style, '/')
+API.add_resource(Style, '/convert')
 
 if __name__ == '__main__':
     APP.run(host='0.0.0.0', debug=True)
