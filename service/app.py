@@ -1,4 +1,5 @@
 import base64
+import json
 import tempfile
 from argparse import ArgumentParser
 
@@ -12,12 +13,14 @@ from magenta.models.image_stylization import model
 from magenta.models.image_stylization.image_stylization_transform import _load_checkpoint
 
 ARGUMENT_PARSER = ArgumentParser('app.py')
-
-ARGUMENT_PARSER.add_argument('model_path',
-                             help='Path to a style transfer model checkpoint.')
-
-ARGUMENT_PARSER.add_argument('styles_count', type=int,
-                             help='Number of different styles available in the provided model.')
+ARGUMENT_PARSER.add_argument(
+    'model_path',
+    help='Path to a style transfer model checkpoint.'
+)
+ARGUMENT_PARSER.add_argument(
+    'styles_count', type=int,
+    help='Number of different styles available in the provided model.'
+)
 
 ARGUMENTS = ARGUMENT_PARSER.parse_args()
 
@@ -26,7 +29,10 @@ API = Api(APP)
 
 REQUEST_PARSER = reqparse.RequestParser()
 REQUEST_PARSER.add_argument('image', type=str)
-REQUEST_PARSER.add_argument('style', type=int)
+REQUEST_PARSER.add_argument('style', type=str)
+
+with open('styles.json') as styles_file:
+    STYLES = json.load(styles_file)
 
 
 class Style(Resource):
@@ -39,7 +45,8 @@ class Style(Resource):
             image = image_utils.load_np_image(temp_file.name)
             image = np.expand_dims(image, 0)
 
-        stylized_image = stylize_image(image, request.style)
+        style_id = STYLES[request.style]
+        stylized_image = stylize_image(image, style_id)
 
         with tempfile.NamedTemporaryFile() as temp_file:
             image_utils.save_np_image(
