@@ -38,7 +38,7 @@ with open('styles.json') as styles_file:
 class Style(Resource):
     def post(self):
         request = REQUEST_PARSER.parse_args()
-        image_data = base64.b64decode(request.image)
+        image_data = base64.urlsafe_b64decode(request.image)
 
         with tempfile.NamedTemporaryFile() as temp_file:
             temp_file.write(image_data)
@@ -54,7 +54,7 @@ class Style(Resource):
                 temp_file.name
             )
 
-            encoded_image = base64.b64encode(temp_file.read()).decode('UTF-8')
+            encoded_image = base64.urlsafe_b64encode(temp_file.read()).decode('UTF-8')
 
         return {'image': encoded_image}
 
