@@ -1,18 +1,38 @@
 package com.randomnoose.switcheroni.switcher;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
+import android.support.transition.TransitionManager;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.randomnoose.switcheroni.R;
+import com.randomnoose.switcheroni.commons.ActivityRequestCodes;
 import com.randomnoose.switcheroni.di.ActivityScoped;
 import com.randomnoose.switcheroni.styles.StyleActivity;
+import com.squareup.picasso.RequestCreator;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -21,10 +41,14 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class SwitcherFragment extends DaggerFragment implements SwitcherContract.View {
 
-  private Button btn_picture;
-  private Button btn_style;
-  private Button btn_redraw;
-  private ImageView img_raw_photo;
+  private final ConstraintSet defaultLayoutConstrains = new ConstraintSet();
+  private final ConstraintSet previewLayoutConstrains = new ConstraintSet();
+
+  private ConstraintLayout constraintLayout;
+  private ImageButton btnPicture;
+  private Button btnStyle;
+  private Button btnRedraw;
+  private ImageView imgConvertedImage;
 
   private SwitcherContract.Presenter presenter;
 
@@ -35,24 +59,36 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
   @Override
   public android.view.View onCreateView(LayoutInflater inflater, ViewGroup container,
                                         Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
-    android.view.View root = inflater.inflate(R.layout.fragment_switcher, container, false);
-    btn_picture = root.findViewById(R.id.btn_picture);
-    btn_picture.setOnClickListener(event -> {
+    final android.view.View root = inflater.inflate(R.layout.fragment_switcher, container, false);
+    constraintLayout = root.findViewById(R.id.main);
+    defaultLayoutConstrains.clone(constraintLayout);
+    previewLayoutConstrains.clone(root.getContext(), R.layout.fragment_switcher_alt);
+    initImageButtonListener(root);
+    initStyleButtonListener(root);
+    initConvertButtonListener(root);
+    imgConvertedImage = root.findViewById(R.id.img_converted_image);
+    return root;
+  }
+
+  private void initImageButtonListener(View root) {
+    btnPicture = root.findViewById(R.id.btn_picture);
+    btnPicture.setOnClickListener(event -> {
       presenter.takePhoto();
     });
+  }
 
-    btn_style = root.findViewById(R.id.btn_style);
-    btn_style.setOnClickListener(event -> {
+  private void initStyleButtonListener(View root) {
+    btnStyle = root.findViewById(R.id.btn_style);
+    btnStyle.setOnClickListener(event -> {
       presenter.changeStyle();
     });
+  }
 
-    btn_redraw = root.findViewById(R.id.btn_redraw);
-    btn_redraw.setOnClickListener(event -> {
+  private void initConvertButtonListener(View root) {
+    btnRedraw = root.findViewById(R.id.btn_redraw);
+    btnRedraw.setOnClickListener(event -> {
       presenter.swapImageStyle();
     });
-    img_raw_photo = root.findViewById(R.id.img_raw_photo);
-    return root;
   }
 
   @Override
@@ -69,19 +105,53 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
 
   @Override
   public void showTakePhoto() {
-    startTakePictureActivity();
+    File image = null;
+    try {
+      image = getTempFile();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    presenter.setRawImageFile(image);
+    startTakePictureActivity(image);
   }
 
-  private void startTakePictureActivity() {
+  private File getTempFile() throws IOException {
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+    String imageFileName = "JPEG_" + timeStamp;
+    File storageDir = this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    return File.createTempFile(imageFileName, ".jpg", storageDir);
+  }
+
+  private void startTakePictureActivity(File image) {
     Intent photoTaker = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     if (photoTaker.resolveActivity(getActivity().getPackageManager()) != null) {
-      startActivityForResult(photoTaker, 1);
+      if (image != null) {
+        final Uri imageUri = FileProvider.getUriForFile(this.getContext(), "com.randomnoose.switcheroni", image);
+        photoTaker.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(photoTaker, ActivityRequestCodes.TAKE_PHOTO_REQUEST);
+      }
     }
   }
 
   @Override
-  public void updateImageButton(Bitmap imageBitmap) {
-    img_raw_photo.setImageBitmap(imageBitmap);
+  public void updateImageButton(RequestCreator requestCreator) {
+    requestCreator.into(btnPicture);
+  }
+
+  @NonNull
+  private Bitmap resizeAndCropPreview(Bitmap srcImage, int outputSize, int boxSize) {
+    final Bitmap cropped = Bitmap.createBitmap(srcImage, 0, 0, boxSize, boxSize);
+    final Bitmap scaled = Bitmap.createScaledBitmap(cropped, outputSize, outputSize, true);
+    final Bitmap output = Bitmap.createBitmap(outputSize, outputSize, Bitmap.Config.ARGB_8888);
+    final Canvas canvas = new Canvas(output);
+    final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    paint.setColor(0XFF000000);
+    final int temp = outputSize / 2;
+    canvas.drawCircle(temp, temp, temp, paint);
+    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+    canvas.drawBitmap(scaled, 0, 0, paint);
+    return output;
   }
 
   @Override
@@ -92,27 +162,20 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
 
   @Override
   public void updateStyleButton(String styleName) {
-    btn_style.setText(styleName);
+    btnStyle.setText(styleName);
   }
 
   @Override
-  public void showImageWithNewStyle() {
-
+  public void showImageWithNewStyle(RequestCreator requestCreator) {
+    requestCreator.fit()
+        .into(imgConvertedImage);
+    TransitionManager.beginDelayedTransition(constraintLayout);
+    previewLayoutConstrains.applyTo(constraintLayout);
   }
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-      final Bundle extras = data.getExtras();
-      final Bitmap imageBitmap = (Bitmap) extras.get("data");
-      presenter.updatePhoto(imageBitmap);
-    }
-
-    if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
-      final Bundle extras = data.getExtras();
-      final String style = extras.getString("style");
-      presenter.updateStyle();
-    }
+    presenter.onActivityResult(requestCode, resultCode, data);
   }
 
   @Inject

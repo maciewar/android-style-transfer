@@ -1,9 +1,11 @@
 package com.randomnoose.switcheroni.data;
 
-import android.graphics.Bitmap;
 import android.util.Base64;
 
-import java.io.ByteArrayOutputStream;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Singleton;
 
@@ -25,13 +27,14 @@ public class StyleChangerImpl implements StyleChanger {
   }
 
   @Override
-  public Call<ResponseBody> convert(final Bitmap image, final Style style) {
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    image.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
-    final byte[] bytes = outputStream.toByteArray();
-
-    final String imageBase64 = Base64.encodeToString(bytes, Base64.URL_SAFE | Base64.NO_WRAP);
-
-    return service.convert(imageBase64, style.getType());
+  public Call<ResponseBody> convert(final File image, final Style style) {
+    try {
+      final byte[] bytes = FileUtils.readFileToByteArray(image);
+      final String imageBase64 = Base64.encodeToString(bytes, Base64.URL_SAFE | Base64.NO_WRAP);
+      return service.convert(imageBase64, style.getType());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }
