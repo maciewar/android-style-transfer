@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.randomnoose.switcheroni.BasePresenter;
 import com.randomnoose.switcheroni.BaseView;
+import com.randomnoose.switcheroni.data.Style;
 import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public interface SwitcherContract {
 
     void showChangeStyle();
 
-    void updateStyleButton(String styleName);
+    void updateStyleButton(Style style);
 
     void showImageWithNewStyle(RequestCreator requestCreator);
   }

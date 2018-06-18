@@ -9,7 +9,7 @@
     tools:context=".styles.StyleFragment">
 
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_01"
         android:layout_width="124dp"
         android:layout_height="124dp"
@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_02"
         android:layout_width="124dp"
         android:layout_height="124dp"
@@ -30,10 +30,10 @@
         app:layout_constraintStart_toEndOf="@+id/btn_style_01"
         app:layout_constraintTop_toTopOf="@+id/btn_style_01" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_03"
         android:layout_width="124dp"
-        android:layout_height="121dp"
+        android:layout_height="124dp"
         android:background="@drawable/image_style_picker_button"
         app:layout_constraintBottom_toTopOf="@+id/btn_style_05"
         app:layout_constraintEnd_toStartOf="@+id/btn_style_04"
@@ -41,7 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_style_01" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_04"
         android:layout_width="124dp"
         android:layout_height="124dp"
@@ -51,7 +51,7 @@
         app:layout_constraintStart_toEndOf="@+id/btn_style_03"
         app:layout_constraintTop_toTopOf="@+id/btn_style_03" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_05"
         android:layout_width="124dp"
         android:layout_height="124dp"
@@ -62,7 +62,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_style_03" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style_06"
         android:layout_width="124dp"
         android:layout_height="124dp"

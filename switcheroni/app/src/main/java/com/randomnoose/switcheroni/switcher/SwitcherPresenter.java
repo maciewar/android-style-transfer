@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.randomnoose.switcheroni.R;
 import com.randomnoose.switcheroni.commons.ActivityRequestCodes;
+import com.randomnoose.switcheroni.commons.CircleCropTransformation;
 import com.randomnoose.switcheroni.data.SwitcherRepository;
 import com.randomnoose.switcheroni.data.SwitcherRepositoryCallback;
 import com.randomnoose.switcheroni.di.ActivityScoped;
@@ -33,6 +34,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void updatePhoto(RequestCreator requestCreator) {
+    requestCreator.transform(CircleCropTransformation.getInstance());
     view.updateImageButton(requestCreator);
   }
 
@@ -48,7 +50,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void updateStyle() {
-    view.updateStyleButton(repository.getStyle().name());
+    view.updateStyleButton(repository.getStyle());
 
   }
 

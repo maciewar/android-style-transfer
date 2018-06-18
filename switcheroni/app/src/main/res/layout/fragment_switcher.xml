@@ -23,25 +23,28 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_style"
         android:layout_width="98dp"
         android:layout_height="98dp"
         android:layout_marginBottom="32dp"
         android:layout_marginStart="24dp"
         android:background="@drawable/image_photo_picker_button"
-        android:text="@string/styles"
+        android:scaleType="fitCenter"
+        android:src="@drawable/style_00_default"
         app:layout_constraintBottom_toTopOf="@+id/btn_redraw"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btn_picture" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_redraw"
         android:layout_width="98dp"
         android:layout_height="98dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/image_photo_picker_button"
+        android:scaleType="fitCenter"
+        android:src="@drawable/btn_convert"
         android:text="@string/convert"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

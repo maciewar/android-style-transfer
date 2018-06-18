@@ -1,16 +1,10 @@
 package com.randomnoose.switcheroni.switcher;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.TransitionManager;
@@ -18,14 +12,15 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.randomnoose.switcheroni.R;
 import com.randomnoose.switcheroni.commons.ActivityRequestCodes;
+import com.randomnoose.switcheroni.data.Style;
 import com.randomnoose.switcheroni.di.ActivityScoped;
 import com.randomnoose.switcheroni.styles.StyleActivity;
+import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
@@ -46,8 +41,8 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
 
   private ConstraintLayout constraintLayout;
   private ImageButton btnPicture;
-  private Button btnStyle;
-  private Button btnRedraw;
+  private ImageButton btnStyle;
+  private ImageButton btnRedraw;
   private ImageView imgConvertedImage;
 
   private SwitcherContract.Presenter presenter;
@@ -139,21 +134,6 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
     requestCreator.into(btnPicture);
   }
 
-  @NonNull
-  private Bitmap resizeAndCropPreview(Bitmap srcImage, int outputSize, int boxSize) {
-    final Bitmap cropped = Bitmap.createBitmap(srcImage, 0, 0, boxSize, boxSize);
-    final Bitmap scaled = Bitmap.createScaledBitmap(cropped, outputSize, outputSize, true);
-    final Bitmap output = Bitmap.createBitmap(outputSize, outputSize, Bitmap.Config.ARGB_8888);
-    final Canvas canvas = new Canvas(output);
-    final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    paint.setColor(0XFF000000);
-    final int temp = outputSize / 2;
-    canvas.drawCircle(temp, temp, temp, paint);
-    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-    canvas.drawBitmap(scaled, 0, 0, paint);
-    return output;
-  }
-
   @Override
   public void showChangeStyle() {
     final Intent styleChanger = new Intent(getActivity(), StyleActivity.class);
@@ -161,8 +141,11 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
   }
 
   @Override
-  public void updateStyleButton(String styleName) {
-    btnStyle.setText(styleName);
+  public void updateStyleButton(Style style) {
+    Picasso.get()
+        .load(style.getStyleId())
+        .fit()
+        .into(btnStyle);
   }
 
   @Override

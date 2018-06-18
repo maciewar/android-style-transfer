@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.randomnoose.switcheroni.R;
 import com.randomnoose.switcheroni.data.Style;
 import com.randomnoose.switcheroni.di.ActivityScoped;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class StyleFragment extends DaggerFragment implements StyleContract.View 
 
   private StyleContract.Presenter presenter;
 
-  private List<Button> btn_styles = new ArrayList<>(6);
+  private List<ImageButton> btn_styles = new ArrayList<>(6);
 
   @Inject
   public StyleFragment() {
@@ -34,7 +35,6 @@ public class StyleFragment extends DaggerFragment implements StyleContract.View 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
     final View root = inflater.inflate(R.layout.fragment_style, container, false);
 
     btn_styles.add(root.findViewById(R.id.btn_style_01));
@@ -44,9 +44,7 @@ public class StyleFragment extends DaggerFragment implements StyleContract.View 
     btn_styles.add(root.findViewById(R.id.btn_style_05));
     btn_styles.add(root.findViewById(R.id.btn_style_06));
 
-
     initButtonCallbacks();
-
     return root;
   }
 
@@ -59,16 +57,12 @@ public class StyleFragment extends DaggerFragment implements StyleContract.View 
   private void initButtonCallbacks() {
     final Style[] values = Style.values();
     for (int idx = 0; idx < btn_styles.size(); idx++) {
-      btn_styles.get(idx).setText(values[idx].getType());
+      Picasso.get()
+          .load(values[idx].getStyleId())
+          .fit()
+          .into(btn_styles.get(idx));
       final String type = values[idx].getType();
       btn_styles.get(idx).setOnClickListener(event -> presenter.chooseStyle(type));
-    }
-  }
-
-  @Override
-  public void showStyles(List<String> styles) {
-    for (int idx = 0; idx < Math.min(styles.size(), 6); idx++) {
-      btn_styles.get(idx).setText(styles.get(idx));
     }
   }
 
