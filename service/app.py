@@ -31,6 +31,8 @@ REQUEST_PARSER = reqparse.RequestParser()
 REQUEST_PARSER.add_argument('image', type=str)
 REQUEST_PARSER.add_argument('style', type=str)
 
+FALLBACK_STYLE = 0
+
 with open('styles.json') as styles_file:
     STYLES = json.load(styles_file)
 
@@ -45,7 +47,7 @@ class Style(Resource):
             image = image_utils.load_np_image(temp_file.name)
             image = np.expand_dims(image, 0)
 
-        style_id = STYLES[request.style]
+        style_id = STYLES.get(request.style, FALLBACK_STYLE)
         stylized_image = stylize_image(image, style_id)
 
         with tempfile.NamedTemporaryFile() as temp_file:
