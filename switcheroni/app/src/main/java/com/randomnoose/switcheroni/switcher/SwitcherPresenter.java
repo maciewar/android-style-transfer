@@ -12,13 +12,15 @@ import com.randomnoose.switcheroni.di.ActivityScoped;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import java.lang.ref.WeakReference;
+
 import javax.inject.Inject;
 
 @ActivityScoped
 final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRepositoryCallback {
 
   private final SwitcherRepository repository;
-  private SwitcherContract.View view;
+  private WeakReference<SwitcherContract.View> view;
 
   @Inject
   SwitcherPresenter(SwitcherRepository repository) {
@@ -27,13 +29,13 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void takePhoto() {
-    view.showTakePhoto(repository.getInputImage(true));
+    view.get().showTakePhoto(repository.getInputImage(true));
   }
 
   @Override
   public void updatePhoto(RequestCreator requestCreator) {
     requestCreator.transform(CircleCropTransformation.getInstance());
-    view.updateImageButton(requestCreator);
+    view.get().updateImageButton(requestCreator);
   }
 
   @Override
@@ -43,13 +45,12 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void changeStyle() {
-    view.showChangeStyle();
+    view.get().showChangeStyle();
   }
 
   @Override
   public void updateStyle() {
-    view.updateStyleButton(repository.getStyle());
-
+    view.get().updateStyleButton(repository.getStyle());
   }
 
   @Override
@@ -75,7 +76,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void takeView(SwitcherContract.View view) {
-    this.view = view;
+    this.view = new WeakReference<>(view);
   }
 
   @Override
@@ -87,7 +88,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
   public void onConvertSuccess() {
     final RequestCreator requestCreator = Picasso.get()
         .load(repository.getOutputImage());
-    view.showImageWithNewStyle(requestCreator);
+    view.get().showImageWithNewStyle(requestCreator);
   }
 
   @Override

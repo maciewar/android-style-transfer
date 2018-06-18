@@ -3,15 +3,14 @@ package com.randomnoose.switcheroni.styles;
 import com.randomnoose.switcheroni.data.Style;
 import com.randomnoose.switcheroni.data.SwitcherRepository;
 
-import java.util.Arrays;
-import java.util.List;
+import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
 public class StylesPresenter implements StyleContract.Presenter {
 
-  private StyleContract.View view;
   private final SwitcherRepository repository;
+  private WeakReference<StyleContract.View> view;
 
   @Inject
   public StylesPresenter(SwitcherRepository repository) {
@@ -21,13 +20,13 @@ public class StylesPresenter implements StyleContract.Presenter {
   @Override
   public void chooseStyle(String style) {
     repository.setStyle(Style.getByType(style));
-    view.finish(style);
+    view.get().finish(style);
 
   }
 
   @Override
   public void takeView(StyleContract.View view) {
-    this.view = view;
+    this.view = new WeakReference<>(view);
   }
 
   @Override
