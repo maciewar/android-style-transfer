@@ -1,8 +1,8 @@
 {
-  "minimalism": 0,
-  "impressionism": 1,
-  "popart": 2,
-  "brutalism": 3,
-  "cubism": 4,
-  "expressionism": 5
+  "Expressionism": 1,
+  "Modern Art": 3,
+  "Indian Art": 5,
+  "The Scream": 21,
+  "Van Gogh": 22,
+  "Bruegl": 23
 }
