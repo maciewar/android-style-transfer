@@ -13,7 +13,7 @@ public interface SwitcherContract {
 
   interface View extends BaseView<Presenter> {
 
-    void showTakePhoto();
+    void showTakePhoto(File resultImage);
 
     void updateImageButton(RequestCreator requestCreator);
 
@@ -40,7 +40,5 @@ public interface SwitcherContract {
     void swapImageStyle();
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
-
-    void setRawImageFile(File image);
   }
 }

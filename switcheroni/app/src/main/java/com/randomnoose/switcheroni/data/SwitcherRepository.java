@@ -3,6 +3,8 @@ package com.randomnoose.switcheroni.data;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import com.randomnoose.switcheroni.core.AndroidFileUtils;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,24 +23,27 @@ import retrofit2.Response;
 @Singleton
 public class SwitcherRepository {
 
+  private final AndroidFileUtils androidFileUtils;
   private StyleChanger service;
   private SwitcherRepositoryCallback callback;
 
   private Style style;
-  private File rawImageFile;
+  private File inputImage;
+  private File outputImage;
 
   @Inject
-  public SwitcherRepository() {
+  public SwitcherRepository(AndroidFileUtils androidFileUtils) {
+    this.androidFileUtils = androidFileUtils;
   }
 
   public void convert() {
-    if (rawImageFile == null || style == null) {
+    if (inputImage == null || style == null) {
       return;
     }
 
     new Thread(() -> {
       System.out.println(">>>>>>>>>>>>>>>>> " + Thread.currentThread().getName());
-      final Call<ResponseBody> convert = service.convert(rawImageFile, style);
+      final Call<ResponseBody> convert = service.convert(inputImage, style);
       System.out.println(">>>>>>>>>>>>>>>>> Sending");
       convert.enqueue(new Callback<ResponseBody>() {
         @Override
@@ -49,7 +54,7 @@ public class SwitcherRepository {
             final String encodedBase64image = (String) jsonObject.get("result");
 
             final byte[] decodedImage = Base64.decode(encodedBase64image, Base64.URL_SAFE | Base64.NO_WRAP);
-            FileUtils.writeByteArrayToFile(rawImageFile, decodedImage);
+            FileUtils.writeByteArrayToFile(getOutputImage(true), decodedImage);
 
             if (callback != null) {
               callback.onConvertSuccess();
@@ -92,11 +97,41 @@ public class SwitcherRepository {
     this.callback = callback;
   }
 
-  public File getRawImageFile() {
-    return rawImageFile;
+
+  public File getInputImage(boolean createNew) {
+    if (inputImage == null || createNew) {
+      if (inputImage != null) {
+        inputImage.delete();
+      }
+      try {
+        inputImage = androidFileUtils.getTempFile();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return inputImage;
+
   }
 
-  public void setRawImageFile(File rawImageFile) {
-    this.rawImageFile = rawImageFile;
+  public File getInputImage() {
+    return getInputImage(false);
+  }
+
+  private File getOutputImage(boolean createNew) {
+    if (outputImage == null || createNew) {
+      if (outputImage != null) {
+        outputImage.delete();
+      }
+      try {
+        outputImage = androidFileUtils.getTempFile();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return outputImage;
+  }
+
+  public File getOutputImage() {
+    return getOutputImage(false);
   }
 }

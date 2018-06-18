@@ -12,15 +12,13 @@ import com.randomnoose.switcheroni.di.ActivityScoped;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
-import java.io.File;
-
 import javax.inject.Inject;
 
 @ActivityScoped
 final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRepositoryCallback {
 
-  private SwitcherContract.View view;
   private final SwitcherRepository repository;
+  private SwitcherContract.View view;
 
   @Inject
   SwitcherPresenter(SwitcherRepository repository) {
@@ -29,7 +27,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void takePhoto() {
-    view.showTakePhoto();
+    view.showTakePhoto(repository.getInputImage(true));
   }
 
   @Override
@@ -64,7 +62,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == ActivityRequestCodes.TAKE_PHOTO_REQUEST && resultCode == Activity.RESULT_OK) {
       final RequestCreator requestCreator = Picasso.get()
-          .load(repository.getRawImageFile())
+          .load(repository.getInputImage())
           .resizeDimen(R.dimen.bitmapButtonPreviewSize, R.dimen.bitmapButtonPreviewSize)
           .centerCrop();
       updatePhoto(requestCreator);
@@ -73,11 +71,6 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
     if (requestCode == ActivityRequestCodes.CHOOSE_STYLE_REQUEST && resultCode == Activity.RESULT_OK) {
       updateStyle();
     }
-  }
-
-  @Override
-  public void setRawImageFile(File image) {
-    repository.setRawImageFile(image);
   }
 
   @Override
@@ -93,7 +86,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
   @Override
   public void onConvertSuccess() {
     final RequestCreator requestCreator = Picasso.get()
-        .load(repository.getRawImageFile());
+        .load(repository.getOutputImage());
     view.showImageWithNewStyle(requestCreator);
   }
 

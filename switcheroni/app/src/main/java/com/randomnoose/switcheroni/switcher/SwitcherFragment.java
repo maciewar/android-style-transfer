@@ -3,8 +3,8 @@ package com.randomnoose.switcheroni.switcher;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.TransitionManager;
@@ -24,10 +24,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -52,7 +48,7 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
   }
 
   @Override
-  public android.view.View onCreateView(LayoutInflater inflater, ViewGroup container,
+  public android.view.View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                                         Bundle savedInstanceState) {
     final android.view.View root = inflater.inflate(R.layout.fragment_switcher, container, false);
     constraintLayout = root.findViewById(R.id.main);
@@ -67,23 +63,17 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
 
   private void initImageButtonListener(View root) {
     btnPicture = root.findViewById(R.id.btn_picture);
-    btnPicture.setOnClickListener(event -> {
-      presenter.takePhoto();
-    });
+    btnPicture.setOnClickListener(event -> presenter.takePhoto());
   }
 
   private void initStyleButtonListener(View root) {
     btnStyle = root.findViewById(R.id.btn_style);
-    btnStyle.setOnClickListener(event -> {
-      presenter.changeStyle();
-    });
+    btnStyle.setOnClickListener(event -> presenter.changeStyle());
   }
 
   private void initConvertButtonListener(View root) {
     btnRedraw = root.findViewById(R.id.btn_redraw);
-    btnRedraw.setOnClickListener(event -> {
-      presenter.swapImageStyle();
-    });
+    btnRedraw.setOnClickListener(event -> presenter.swapImageStyle());
   }
 
   @Override
@@ -99,23 +89,8 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
   }
 
   @Override
-  public void showTakePhoto() {
-    File image = null;
-    try {
-      image = getTempFile();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    presenter.setRawImageFile(image);
-    startTakePictureActivity(image);
-  }
-
-  private File getTempFile() throws IOException {
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-    String imageFileName = "JPEG_" + timeStamp;
-    File storageDir = this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    return File.createTempFile(imageFileName, ".jpg", storageDir);
+  public void showTakePhoto(File resultImage) {
+    startTakePictureActivity(resultImage);
   }
 
   private void startTakePictureActivity(File image) {
@@ -151,6 +126,7 @@ public class SwitcherFragment extends DaggerFragment implements SwitcherContract
   @Override
   public void showImageWithNewStyle(RequestCreator requestCreator) {
     requestCreator.fit()
+        .centerInside()
         .into(imgConvertedImage);
     TransitionManager.beginDelayedTransition(constraintLayout);
     previewLayoutConstrains.applyTo(constraintLayout);
