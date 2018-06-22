@@ -21,6 +21,7 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   private final SwitcherRepository repository;
   private WeakReference<SwitcherContract.View> view;
+  private boolean imgIsSwapping;
 
   @Inject
   SwitcherPresenter(SwitcherRepository repository) {
@@ -55,6 +56,10 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
 
   @Override
   public void swapImageStyle() {
+    if (imgIsSwapping) {
+      return;
+    }
+    imgIsSwapping = true;
     repository.setCallback(this);
     repository.convert();
   }
@@ -89,10 +94,11 @@ final class SwitcherPresenter implements SwitcherContract.Presenter, SwitcherRep
     final RequestCreator requestCreator = Picasso.get()
         .load(repository.getOutputImage());
     view.get().showImageWithNewStyle(requestCreator);
+    imgIsSwapping = false;
   }
 
   @Override
   public void onConvertFailure() {
-
+    imgIsSwapping = false;
   }
 }
